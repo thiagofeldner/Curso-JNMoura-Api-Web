@@ -102,7 +102,7 @@ namespace web_api.Controllers
                 {
                     cmd.CommandText = "insert into paciente(nome, datanascimento) values(@nome, @datanascimento); select convert(int, @@IDENTITY) as codigo;";
                     cmd.Parameters.Add(new SqlParameter("@nome", System.Data.SqlDbType.VarChar)).Value = paciente.Nome;
-                    cmd.Parameters.Add(new SqlParameter("@datanascimento", System.Data.SqlDbType.DateTime)).Value = paciente.DataNascimento;
+                    cmd.Parameters.Add(new SqlParameter("@datanascimento", System.Data.SqlDbType.DateTime)).Value = paciente.DataNascimento.ToString("yyyy-MM-dd");
                     cmd.Connection = conn;
                     paciente.Codigo = (int) cmd.ExecuteScalar();
                 }
