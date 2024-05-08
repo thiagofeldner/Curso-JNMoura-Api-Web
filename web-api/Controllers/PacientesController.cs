@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Net;
 using System.Web.Http;
+using web_api.Models;
 
 namespace web_api.Controllers
 {
@@ -59,6 +60,7 @@ namespace web_api.Controllers
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.CommandText = $"select codigo, nome, datanascimento from paciente where codigo = {id};";
+                    //cmd.Parameters.Add(new SqlParameter("@id", System.Data.SqlDbType.Int)).Value = paciente.Codigo;
                     cmd.Connection = conn;
                     using(SqlDataReader dr = cmd.ExecuteReader())
                     {
@@ -98,7 +100,9 @@ namespace web_api.Controllers
                 
                 using (SqlCommand cmd = new SqlCommand())
                 {
-                    cmd.CommandText = $"insert into paciente(nome, datanascimento) values('{paciente.Nome}', '{paciente.DataNascimento}'); select convert(int, @@IDENTITY) as codigo;"; ;
+                    cmd.CommandText = "insert into paciente(nome, datanascimento) values(@nome, @datanascimento); select convert(int, @@IDENTITY) as codigo;";
+                    cmd.Parameters.Add(new SqlParameter("@nome", System.Data.SqlDbType.VarChar)).Value = paciente.Nome;
+                    cmd.Parameters.Add(new SqlParameter("@datanascimento", System.Data.SqlDbType.DateTime)).Value = paciente.DataNascimento;
                     cmd.Connection = conn;
                     paciente.Codigo = (int) cmd.ExecuteScalar();
                 }
@@ -129,8 +133,11 @@ namespace web_api.Controllers
 
                 using (SqlCommand cmd = new SqlCommand())
                 {
-                    cmd.CommandText = $"update paciente set nome = '{paciente.Nome}', datanascimento = " +
-                        $"'{paciente.DataNascimento.ToString("yyyy-MM-dd")}' where codigo = {id};";
+                    cmd.CommandText = "update paciente set nome = @nome , datanascimento = @datanascimento where codigo = @id;";
+                    cmd.Parameters.Add(new SqlParameter("@nome", System.Data.SqlDbType.VarChar)).Value = paciente.Nome;
+                    cmd.Parameters.Add(new SqlParameter("@datanascimento", System.Data.SqlDbType.DateTime)).Value = paciente.DataNascimento.ToString("yyyy-MM-dd");
+                    cmd.Parameters.Add(new SqlParameter("id", System.Data.SqlDbType.Int)).Value = paciente.Codigo;
+
                     cmd.Connection = conn;
                     linhasAfetadas = cmd.ExecuteNonQuery();
                 }
@@ -157,7 +164,8 @@ namespace web_api.Controllers
 
                 using (SqlCommand cmd = new SqlCommand())
                 {
-                    cmd.CommandText = $"delete from paciente where codigo = {id};";
+                    cmd.CommandText = "delete from paciente where codigo = @id;";
+                    cmd.Parameters.Add(new SqlParameter("id", System.Data.SqlDbType.Int)).Value = id;
                     cmd.Connection = conn;
                     linhasAfetadas = cmd.ExecuteNonQuery();
                 }
