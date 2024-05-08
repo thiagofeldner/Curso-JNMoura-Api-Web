@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Net;
 using System.Web.Http;
-using web_api.Models;
 
 namespace web_api.Controllers
 {

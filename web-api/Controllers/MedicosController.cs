@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Web.Http;
-using web_api.Models;
 
 namespace web_api.Controllers
 {
