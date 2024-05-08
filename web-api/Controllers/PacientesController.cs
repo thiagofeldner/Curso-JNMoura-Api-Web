@@ -102,7 +102,7 @@ namespace web_api.Controllers
                 {
                     cmd.CommandText = "insert into paciente(nome, datanascimento) values(@nome, @datanascimento); select convert(int, @@IDENTITY) as codigo;";
                     cmd.Parameters.Add(new SqlParameter("@nome", System.Data.SqlDbType.VarChar)).Value = paciente.Nome;
-                    cmd.Parameters.Add(new SqlParameter("@datanascimento", System.Data.SqlDbType.DateTime)).Value = paciente.DataNascimento.ToString("yyyy-MM-dd");
+                    cmd.Parameters.Add(new SqlParameter("@datanascimento", System.Data.SqlDbType.Date)).Value = paciente.DataNascimento;
                     cmd.Connection = conn;
                     paciente.Codigo = (int) cmd.ExecuteScalar();
                 }
@@ -135,7 +135,7 @@ namespace web_api.Controllers
                 {
                     cmd.CommandText = "update paciente set nome = @nome , datanascimento = @datanascimento where codigo = @id;";
                     cmd.Parameters.Add(new SqlParameter("@nome", System.Data.SqlDbType.VarChar)).Value = paciente.Nome;
-                    cmd.Parameters.Add(new SqlParameter("@datanascimento", System.Data.SqlDbType.DateTime)).Value = paciente.DataNascimento.ToString("yyyy-MM-dd");
+                    cmd.Parameters.Add(new SqlParameter("@datanascimento", System.Data.SqlDbType.Date)).Value = paciente.DataNascimento;
                     cmd.Parameters.Add(new SqlParameter("id", System.Data.SqlDbType.Int)).Value = paciente.Codigo;
 
                     cmd.Connection = conn;
