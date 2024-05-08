@@ -6,12 +6,17 @@ namespace web_api.Controllers
 {
     public class MedicosController : ApiController
     {
+        //Conexão = String de conexão
+        //SGBD: TFELDNER\SQLEXPRESS - casa
+        //SGBD: G4F-THIAGOF\SQLEXPRESS - Empresa
+        //Base: consultorio
+        //String de conexão:Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;
+
         private readonly string conectionString;
 
         public MedicosController()
         {
-            this.conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            //this.conectionString = = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
+            this.conectionString = Configurations.Database.getConnectionString();
         }
 
         // GET: api/Medicos

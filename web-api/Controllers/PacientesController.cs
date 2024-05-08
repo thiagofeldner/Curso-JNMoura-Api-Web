@@ -18,8 +18,7 @@ namespace web_api.Controllers
         
         public PacientesController()
         {
-            this.conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            //this.conectionString = = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
+            this.conectionString = Configurations.Database.getConnectionString();
         }
 
         // GET: api/Pacientes
