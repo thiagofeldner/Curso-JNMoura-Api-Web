@@ -8,15 +8,26 @@ namespace web_api.Controllers
 {
     public class PacientesController : ApiController
     {
+        //Conexão = String de conexão
+        //SGBD: TFELDNER\SQLEXPRESS - casa
+        //SGBD: G4F-THIAGOF\SQLEXPRESS - Empresa
+        //Base: consultorio
+        //String de conexão:Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;
+
+        private readonly string conectionString;
+        
+        public PacientesController()
+        {
+            this.conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
+            //this.conectionString = = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
+        }
+
         // GET: api/Pacientes
         public IHttpActionResult Get()
         {
-            List<Models.Paciente> pacientes = new List<Models.Paciente> ();
-
-            //string conectionString = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            string conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            using (SqlConnection conn = new SqlConnection(conectionString))
+            List<Models.Paciente> pacientes = new List<Models.Paciente> ();            
+            
+            using (SqlConnection conn = new SqlConnection(this.conectionString))
             {
                 conn.Open();
                 
@@ -49,10 +60,7 @@ namespace web_api.Controllers
         {
             Models.Paciente paciente = new Models.Paciente();
 
-            //string conectionString = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            string conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            using (SqlConnection conn = new SqlConnection(conectionString))
+            using (SqlConnection conn = new SqlConnection(this.conectionString))
             {
                 conn.Open();                
                 
@@ -82,18 +90,9 @@ namespace web_api.Controllers
         // POST: api/Pacientes
         public IHttpActionResult Post(Models.Paciente paciente)
         {
-            //Conexão = String de conexão
-            //SGBD: TFELDNER\SQLEXPRESS - casa
-            //SGBD: G4F-THIAGOF\SQLEXPRESS - Empresa
-            //Base: consultorio
-            //String de conexão:Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;
-
             //int linhasAfetadas = 0;
-            //string conectionString = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            string conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            using (SqlConnection conn = new SqlConnection(conectionString))
+            
+            using (SqlConnection conn = new SqlConnection(this.conectionString))
             {
                 conn.Open();
                 
@@ -123,10 +122,7 @@ namespace web_api.Controllers
 
             int linhasAfetadas = 0;
 
-            //string conectionString = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            string conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            using (SqlConnection conn = new SqlConnection(conectionString))
+            using (SqlConnection conn = new SqlConnection(this.conectionString))
             {
                 conn.Open();
 
@@ -154,10 +150,7 @@ namespace web_api.Controllers
         {
             int linhasAfetadas = 0;
 
-            //string conectionString = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            string conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            using (SqlConnection conn = new SqlConnection(conectionString))
+            using (SqlConnection conn = new SqlConnection(this.conectionString))
             {
                 conn.Open();
 

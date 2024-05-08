@@ -6,16 +6,21 @@ namespace web_api.Controllers
 {
     public class MedicosController : ApiController
     {
+        private readonly string conectionString;
+
+        public MedicosController()
+        {
+            this.conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
+            //this.conectionString = = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
+        }
+
         // GET: api/Medicos
         [HttpGet]
         public IHttpActionResult Obter()
         {
             List<Models.Medico> medicos = new List<Models.Medico>();
 
-            //string conectionString = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            string conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            using (SqlConnection conn = new SqlConnection(conectionString))
+            using (SqlConnection conn = new SqlConnection(this.conectionString))
             {
                 conn.Open();
 
@@ -47,10 +52,7 @@ namespace web_api.Controllers
         {
             Models.Medico medico = new Models.Medico();
             
-            //string conectionString = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            string conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            using (SqlConnection conn = new SqlConnection(conectionString))
+            using (SqlConnection conn = new SqlConnection(this.conectionString))
             {
                 conn.Open();
 
@@ -84,10 +86,7 @@ namespace web_api.Controllers
         {
             Models.Medico medico = new Models.Medico();
 
-            //string conectionString = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            string conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            using (SqlConnection conn = new SqlConnection(conectionString))
+            using (SqlConnection conn = new SqlConnection(this.conectionString))
             {
                 conn.Open();
 
@@ -117,18 +116,9 @@ namespace web_api.Controllers
         [HttpPost]
         public IHttpActionResult Adicionar(Models.Medico medico)
         {
-            //Conexão = String de conexão
-            //SGBD: TFELDNER\SQLEXPRESS - casa
-            //SGBD: G4F-THIAGOF\SQLEXPRESS - Empresa
-            //Base: consultorio
-            //String de conexão:Server=TFELDNER\SQLEXPRESS; Database=consultorio; Trusted_Connection=True;
-
             int linhasAfetadas = 0;
-
-            //string conectionString = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            string conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            using (SqlConnection conn = new SqlConnection(conectionString))
+                        
+            using (SqlConnection conn = new SqlConnection(this.conectionString))
             {
                 conn.Open();
                                 
@@ -157,10 +147,7 @@ namespace web_api.Controllers
 
             int linhasAfetadas = 0;
 
-            //string conectionString = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            string conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            using (SqlConnection conn = new SqlConnection(conectionString))
+            using (SqlConnection conn = new SqlConnection(this.conectionString))
             {
                 conn.Open();
 
@@ -187,10 +174,7 @@ namespace web_api.Controllers
         {
             int linhasAfetadas = 0;
 
-            //string conectionString = @"Server=G4F-THIAGOF\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-            string conectionString = @"Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;";
-
-            using (SqlConnection conn = new SqlConnection(conectionString))
+            using (SqlConnection conn = new SqlConnection(this.conectionString))
             {
                 conn.Open();
 
