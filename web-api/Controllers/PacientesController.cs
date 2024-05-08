@@ -67,7 +67,7 @@ namespace web_api.Controllers
                         if (dr.Read())
                         {
                             paciente.Codigo = (int)dr["codigo"];
-                            paciente.Nome = (string)dr["nome"];
+                            paciente.Nome = dr["nome"].ToString();
                             paciente.DataNascimento = (DateTime)dr["datanascimento"];
                         }
                     }                   
