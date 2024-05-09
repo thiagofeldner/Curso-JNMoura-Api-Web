@@ -27,6 +27,7 @@ namespace web_api.Repositories.SQLServer
                 using (this.cmd)
                 {                   
                     cmd.CommandText = $"select id, crm, nome from medico;";
+
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
                         while (dr.Read())
