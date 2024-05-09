@@ -1,5 +1,5 @@
-﻿using System.Data.SqlClient;
-using System.Web.Http;
+﻿using System.Web.Http;
+using System.Net;
 
 namespace web_api.Controllers
 {
@@ -35,7 +35,7 @@ namespace web_api.Controllers
             if(!this.repositorioPaciente.Insert(paciente))
                 return InternalServerError();
 
-            return Ok(paciente);
+            return Content(HttpStatusCode.Created, paciente);
         }
 
         // PUT: api/Pacientes/5

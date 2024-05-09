@@ -107,10 +107,10 @@ namespace web_api.Repositories.SQLServer
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "update paciente set nome = @nome , datanascimento = @datanascimento where codigo = @id;";
+                    cmd.CommandText = "update paciente set nome = @nome , datanascimento = @datanascimento where codigo = @codigo;";
                     cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = paciente.Nome;
                     cmd.Parameters.Add(new SqlParameter("@datanascimento", SqlDbType.Date)).Value = paciente.DataNascimento;
-                    cmd.Parameters.Add(new SqlParameter("id", SqlDbType.Int)).Value = paciente.Codigo;
+                    cmd.Parameters.Add(new SqlParameter("codigo", SqlDbType.Int)).Value = paciente.Codigo;
 
                     linhasAfetadas = cmd.ExecuteNonQuery();
                 }
@@ -119,7 +119,7 @@ namespace web_api.Repositories.SQLServer
             return linhasAfetadas == 1;
         }
 
-        public bool Delete(int id)
+        public bool Delete(int codigo)
         {
             int linhasAfetadas = 0;
 
@@ -130,8 +130,8 @@ namespace web_api.Repositories.SQLServer
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "delete from paciente where codigo = @id;";
-                    cmd.Parameters.Add(new SqlParameter("id", SqlDbType.Int)).Value = id;
+                    cmd.CommandText = "delete from paciente where codigo = @codigo;";
+                    cmd.Parameters.Add(new SqlParameter("codigo", SqlDbType.Int)).Value = codigo;
                     linhasAfetadas = cmd.ExecuteNonQuery();
                 }
             }
