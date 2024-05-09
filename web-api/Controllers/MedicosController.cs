@@ -1,54 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.Web.Http;
 
 namespace web_api.Controllers
 {
     public class MedicosController : ApiController
     {
-        //Conexão = String de conexão
-        //SGBD: TFELDNER\SQLEXPRESS - casa
-        //SGBD: G4F-THIAGOF\SQLEXPRESS - Empresa
-        //Base: consultorio
-        //String de conexão:Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;
-
-        private readonly string conectionString;
+        private readonly Repositories.SQLServer.Medico repositorioMedico;
 
         public MedicosController()
         {
-            this.conectionString = Configurations.Database.getConnectionString();
+            this.repositorioMedico = new Repositories.SQLServer.Medico(Configurations.Database.getConnectionString());
         }
 
         // GET: api/Medicos
         [HttpGet]
-        public IHttpActionResult Obter()
+        public IHttpActionResult Get()
         {
-            List<Models.Medico> medicos = new List<Models.Medico>();
-
-            using (SqlConnection conn = new SqlConnection(this.conectionString))
-            {
-                conn.Open();
-
-                using (SqlCommand cmd = new SqlCommand())
-                {
-                    cmd.CommandText = $"select id, crm, nome from medico;"; 
-                    cmd.Connection = conn;
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        while (dr.Read())
-                        {
-                            Models.Medico medico = new Models.Medico();
-
-                            medico.Id = (int)dr["id"];
-                            medico.CRM = dr["crm"].ToString();
-                            medico.Nome = dr["nome"].ToString();
-
-                            medicos.Add(medico);
-                        }
-                    }
-                }
-            }
-            return Ok(medicos);
+            return Ok(this.repositorioMedico.GetAll());
         }
 
         // GET: api/Medicos?crm=123456/BH
@@ -57,7 +25,7 @@ namespace web_api.Controllers
         {
             Models.Medico medico = new Models.Medico();
             
-            using (SqlConnection conn = new SqlConnection(this.conectionString))
+            using (SqlConnection conn = new SqlConnection())
             {
                 conn.Open();
 
@@ -91,7 +59,7 @@ namespace web_api.Controllers
         {
             Models.Medico medico = new Models.Medico();
 
-            using (SqlConnection conn = new SqlConnection(this.conectionString))
+            using (SqlConnection conn = new SqlConnection())
             {
                 conn.Open();
 
@@ -123,7 +91,7 @@ namespace web_api.Controllers
         {
             int linhasAfetadas = 0;
                         
-            using (SqlConnection conn = new SqlConnection(this.conectionString))
+            using (SqlConnection conn = new SqlConnection())
             {
                 conn.Open();
                                 
@@ -152,7 +120,7 @@ namespace web_api.Controllers
 
             int linhasAfetadas = 0;
 
-            using (SqlConnection conn = new SqlConnection(this.conectionString))
+            using (SqlConnection conn = new SqlConnection())
             {
                 conn.Open();
 
@@ -179,7 +147,7 @@ namespace web_api.Controllers
         {
             int linhasAfetadas = 0;
 
-            using (SqlConnection conn = new SqlConnection(this.conectionString))
+            using (SqlConnection conn = new SqlConnection())
             {
                 conn.Open();
 
