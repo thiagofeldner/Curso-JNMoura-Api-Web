@@ -137,8 +137,5 @@ namespace web_api.Repositories.SQLServer
             }
             return linhasAfetadas == 1;
         }
-
-        
-
     }
 }

@@ -36,7 +36,6 @@ namespace web_api.Controllers
                 return InternalServerError();
 
             return Ok(paciente);
-
         }
 
         // PUT: api/Pacientes/5
