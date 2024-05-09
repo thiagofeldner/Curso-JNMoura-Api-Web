@@ -102,6 +102,37 @@ namespace web_api.Repositories.SQLServer
             return medico;
         }
 
+        public List<Models.Medico> SelectByNome(string nome)
+        {
+            List<Models.Medico> medicos = new List<Models.Medico>();
+
+            using (SqlConnection conn = new SqlConnection(this.connectionString))
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select id, crm, nome from medico where nome like @nome;";
+                    cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = $"%{nome}%";
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (dr.Read())
+                        {
+                            Models.Medico medico = new Models.Medico();
+                            medico.Id = (int)dr["id"];
+                            medico.CRM = dr["crm"].ToString();
+                            medico.Nome = dr["nome"].ToString();
+
+                            medicos.Add(medico);
+                        }
+                    }
+                }
+            }
+            return medicos;
+        }
+
         public bool Insert(Models.Medico medico)
         {
             using (SqlConnection conn = new SqlConnection(this.connectionString))

@@ -42,6 +42,16 @@ namespace web_api.Controllers
             return Ok(medico);
         }
 
+        // GET: api/Medicos?nome=zeca
+        [HttpGet]
+        public IHttpActionResult GetByNome(string nome)
+        {
+            if (nome.Length < 3)
+                return BadRequest("O nome deve ter no mínimo 5 caracteres.");
+
+            return Ok(this.repositorioMedico.SelectByNome(nome));
+        }
+
         // POST: api/Medicos        
         [HttpPost]
         public IHttpActionResult Post(Models.Medico medico)
