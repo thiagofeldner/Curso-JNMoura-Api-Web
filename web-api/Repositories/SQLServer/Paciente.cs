@@ -7,30 +7,30 @@ namespace web_api.Repositories.SQLServer
 {
     public class Paciente
     {
-        private readonly SqlConnection conn;
-        private readonly SqlCommand cmd;
+        private readonly SqlConnection _conn;
+        private readonly SqlCommand _cmd;
 
         public Paciente(string connectionString)
         {
-            this.conn = new SqlConnection(connectionString);
-            this.cmd = new SqlCommand();
-            this.cmd.Connection = conn;
+            _conn = new SqlConnection(connectionString);
+            _cmd = new SqlCommand();
+            _cmd.Connection = _conn;
         }
 
         public List<Models.Paciente> Select()
         {
             List<Models.Paciente> pacientes = new List<Models.Paciente>();
 
-            using (this.conn)
+            using (this._conn)
             {
-                conn.Open();
+                _conn.Open();
 
-                using (this.cmd)
+                using (this._cmd)
                 {
-                    cmd.CommandText = $"select codigo, nome, datanascimento from paciente;";
-                    cmd.Connection = conn;
+                    _cmd.CommandText = $"select codigo, nome, datanascimento from paciente;";
+                    _cmd.Connection = _conn;
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataReader dr = _cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
@@ -53,14 +53,14 @@ namespace web_api.Repositories.SQLServer
         {
             Models.Paciente paciente = null;
 
-            using (this.conn)
+            using (this._conn)
             {
-                conn.Open();
+                _conn.Open();
 
-                using (this.cmd)
+                using (this._cmd)
                 {   
-                    cmd.CommandText = "select codigo, nome, datanascimento from paciente where codigo = @id;";
-                    cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
+                    _cmd.CommandText = "select codigo, nome, datanascimento from paciente where codigo = @id;";
+                    _cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
 
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
@@ -80,17 +80,17 @@ namespace web_api.Repositories.SQLServer
         
         public bool Insert(Models.Paciente paciente)
         {
-            using (this.conn)
+            using (this._conn)
             {
-                conn.Open();
+                _conn.Open();
 
-                using (this.cmd)
+                using (this._cmd)
                 {
-                    cmd.CommandText = "insert into paciente(nome, datanascimento) values(@nome, @datanascimento); select convert(int,scope_identity());";
-                    cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = paciente.Nome;
-                    cmd.Parameters.Add(new SqlParameter("@datanascimento", SqlDbType.Date)).Value = paciente.DataNascimento;
+                    _cmd.CommandText = "insert into paciente(nome, datanascimento) values(@nome, @datanascimento); select convert(int,scope_identity());";
+                    _cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = paciente.Nome;
+                    _cmd.Parameters.Add(new SqlParameter("@datanascimento", SqlDbType.Date)).Value = paciente.DataNascimento;
 
-                    paciente.Codigo = (int)cmd.ExecuteScalar();
+                    paciente.Codigo = (int)_cmd.ExecuteScalar();
                 }
             }
 
@@ -101,18 +101,18 @@ namespace web_api.Repositories.SQLServer
         {
             int linhasAfetadas = 0;
 
-            using (this.conn)
+            using (this._conn)
             {
-                conn.Open();
+                _conn.Open();
 
-                using (this.cmd)
+                using (this._cmd)
                 {
-                    cmd.CommandText = "update paciente set nome = @nome , datanascimento = @datanascimento where codigo = @codigo;";
-                    cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = paciente.Nome;
-                    cmd.Parameters.Add(new SqlParameter("@datanascimento", SqlDbType.Date)).Value = paciente.DataNascimento;
-                    cmd.Parameters.Add(new SqlParameter("codigo", SqlDbType.Int)).Value = paciente.Codigo;
+                    _cmd.CommandText = "update paciente set nome = @nome , datanascimento = @datanascimento where codigo = @codigo;";
+                    _cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = paciente.Nome;
+                    _cmd.Parameters.Add(new SqlParameter("@datanascimento", SqlDbType.Date)).Value = paciente.DataNascimento;
+                    _cmd.Parameters.Add(new SqlParameter("codigo", SqlDbType.Int)).Value = paciente.Codigo;
 
-                    linhasAfetadas = cmd.ExecuteNonQuery();
+                    linhasAfetadas = _cmd.ExecuteNonQuery();
                 }
             }
 
@@ -123,15 +123,15 @@ namespace web_api.Repositories.SQLServer
         {
             int linhasAfetadas = 0;
 
-            using (this.conn)
+            using (this._conn)
             {
-                conn.Open();
+                _conn.Open();
 
-                using (this.cmd)
+                using (this._cmd)
                 {
-                    cmd.CommandText = "delete from paciente where codigo = @codigo;";
-                    cmd.Parameters.Add(new SqlParameter("codigo", SqlDbType.Int)).Value = codigo;
-                    linhasAfetadas = cmd.ExecuteNonQuery();
+                    _cmd.CommandText = "delete from paciente where codigo = @codigo;";
+                    _cmd.Parameters.Add(new SqlParameter("codigo", SqlDbType.Int)).Value = codigo;
+                    linhasAfetadas = _cmd.ExecuteNonQuery();
                 }
             }
             return linhasAfetadas == 1;
