@@ -156,7 +156,7 @@ namespace web_api.Repositories.SQLServer
                 {
                     cmd.Connection = conn;
                     cmd.CommandText = "delete from medico where id = @id;";
-                    cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.VarChar)).Value = id;
+                    cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
 
                     linhasAfetadas = cmd.ExecuteNonQuery();
                 }

@@ -1,86 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Net;
+﻿using System.Data.SqlClient;
 using System.Web.Http;
 
 namespace web_api.Controllers
 {
     public class PacientesController : ApiController
     {
-        //Conexão = String de conexão
-        //SGBD: TFELDNER\SQLEXPRESS - casa
-        //SGBD: G4F-THIAGOF\SQLEXPRESS - Empresa
-        //Base: consultorio
-        //String de conexão:Server=TFELDNER\SQLEXPRESS;Database=consultorio;Trusted_Connection=True;
+        private readonly Repositories.SQLServer.Paciente repositorioPaciente;
 
-        private readonly string conectionString;
-        
         public PacientesController()
         {
-            this.conectionString = Configurations.Database.getConnectionString();
+            this.repositorioPaciente = new Repositories.SQLServer.Paciente(Configurations.Database.getConnectionString());
         }
 
         // GET: api/Pacientes
         public IHttpActionResult Get()
         {
-            List<Models.Paciente> pacientes = new List<Models.Paciente> ();            
-            
-            using (SqlConnection conn = new SqlConnection(this.conectionString))
-            {
-                conn.Open();
-                
-                using (SqlCommand cmd = new SqlCommand())
-                {
-                    cmd.CommandText = $"select codigo, nome, datanascimento from paciente;";
-                    cmd.Connection = conn;
-
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        while (dr.Read())
-                        {
-                            Models.Paciente paciente = new Models.Paciente();
-
-                            paciente.Codigo = (int)dr["codigo"];
-                            paciente.Nome = (string)dr["nome"];
-                            paciente.DataNascimento = (DateTime)dr["datanascimento"];
-
-                            pacientes.Add(paciente);
-                        }
-                    }
-                }
-            }
-
-            return Ok(pacientes);
+            return Ok(this.repositorioPaciente.Select());
         }
 
         // GET: api/Pacientes/5
         public IHttpActionResult Get(int id)
         {
-            Models.Paciente paciente = new Models.Paciente();
-
-            using (SqlConnection conn = new SqlConnection(this.conectionString))
-            {
-                conn.Open();                
-                
-                using (SqlCommand cmd = new SqlCommand())
-                {
-                    cmd.CommandText = $"select codigo, nome, datanascimento from paciente where codigo = {id};";
-                    //cmd.Parameters.Add(new SqlParameter("@id", System.Data.SqlDbType.Int)).Value = paciente.Codigo;
-                    cmd.Connection = conn;
-                    using(SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        if (dr.Read())
-                        {
-                            paciente.Codigo = (int)dr["codigo"];
-                            paciente.Nome = dr["nome"].ToString();
-                            paciente.DataNascimento = (DateTime)dr["datanascimento"];
-                        }
-                    }                   
-                }
-            }
-
-            if (paciente.Codigo == 0)
+            Models.Paciente paciente = this.repositorioPaciente.Select(id);
+                    
+            if (paciente is null)
                 return NotFound();
             
             return Ok(paciente);
@@ -89,28 +32,11 @@ namespace web_api.Controllers
         // POST: api/Pacientes
         public IHttpActionResult Post(Models.Paciente paciente)
         {
-            //int linhasAfetadas = 0;
-            
-            using (SqlConnection conn = new SqlConnection(this.conectionString))
-            {
-                conn.Open();
-                
-                using (SqlCommand cmd = new SqlCommand())
-                {
-                    cmd.CommandText = "insert into paciente(nome, datanascimento) values(@nome, @datanascimento); select convert(int, @@IDENTITY) as codigo;";
-                    cmd.Parameters.Add(new SqlParameter("@nome", System.Data.SqlDbType.VarChar)).Value = paciente.Nome;
-                    cmd.Parameters.Add(new SqlParameter("@datanascimento", System.Data.SqlDbType.Date)).Value = paciente.DataNascimento;
-                    cmd.Connection = conn;
-                    paciente.Codigo = (int) cmd.ExecuteScalar();
-                }
-            }
-
-            if (paciente.Codigo == 0)
+            if(!this.repositorioPaciente.Insert(paciente))
                 return InternalServerError();
 
-            //return Ok(paciente);
-            //return Created($"api/pacientes/{paciente.Codigo}", paciente);
-            return Content(HttpStatusCode.Created, paciente);
+            return Ok(paciente);
+
         }
 
         // PUT: api/Pacientes/5
@@ -119,50 +45,16 @@ namespace web_api.Controllers
             if (id != paciente.Codigo)
                 return BadRequest("O Id da requisição não coincide com o código do paciente.");
 
-            int linhasAfetadas = 0;
-
-            using (SqlConnection conn = new SqlConnection(this.conectionString))
-            {
-                conn.Open();
-
-                using (SqlCommand cmd = new SqlCommand())
-                {
-                    cmd.CommandText = "update paciente set nome = @nome , datanascimento = @datanascimento where codigo = @id;";
-                    cmd.Parameters.Add(new SqlParameter("@nome", System.Data.SqlDbType.VarChar)).Value = paciente.Nome;
-                    cmd.Parameters.Add(new SqlParameter("@datanascimento", System.Data.SqlDbType.Date)).Value = paciente.DataNascimento;
-                    cmd.Parameters.Add(new SqlParameter("id", System.Data.SqlDbType.Int)).Value = paciente.Codigo;
-
-                    cmd.Connection = conn;
-                    linhasAfetadas = cmd.ExecuteNonQuery();
-                }
-            }
-
-            if (linhasAfetadas == 0)
+            if (!this.repositorioPaciente.Update(paciente))
                 return NotFound();
                     
             return Ok(paciente);
-
         }
 
         // DELETE: api/Pacientes/5
         public IHttpActionResult Delete(int id)
         {
-            int linhasAfetadas = 0;
-
-            using (SqlConnection conn = new SqlConnection(this.conectionString))
-            {
-                conn.Open();
-
-                using (SqlCommand cmd = new SqlCommand())
-                {
-                    cmd.CommandText = "delete from paciente where codigo = @id;";
-                    cmd.Parameters.Add(new SqlParameter("id", System.Data.SqlDbType.Int)).Value = id;
-                    cmd.Connection = conn;
-                    linhasAfetadas = cmd.ExecuteNonQuery();
-                }
-            }
-
-            if (linhasAfetadas == 0)
+            if (!this.repositorioPaciente.Delete(id))
                 return NotFound();
 
             return Ok();

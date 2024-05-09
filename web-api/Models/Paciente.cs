@@ -10,6 +10,5 @@ namespace web_api.Models
         public int Codigo { get; set; }
         public string Nome { get; set; }
         public DateTime DataNascimento {  get; set; }
-
     }
 }
