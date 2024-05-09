@@ -6,24 +6,26 @@ namespace web_api.Repositories.SQLServer
 {
     public class Medico
     {
-        private readonly string connectionString;
+        private readonly SqlConnection conn;
+        private readonly SqlCommand cmd;
 
         public Medico(string connectionString)
         {
-            this.connectionString = connectionString;
+            this.conn = new SqlConnection(connectionString);
+            this.cmd = new SqlCommand();
+            this.cmd.Connection = conn;
         }
 
         public List<Models.Medico> Select()
         {
             List<Models.Medico> medicos = new List<Models.Medico>();
 
-            using (SqlConnection conn = new SqlConnection(this.connectionString))
+            using (this.conn)
             {
                 conn.Open();
 
-                using (SqlCommand cmd = new SqlCommand())
-                {
-                    cmd.Connection = conn;
+                using (this.cmd)
+                {                   
                     cmd.CommandText = $"select id, crm, nome from medico;";
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
@@ -47,13 +49,12 @@ namespace web_api.Repositories.SQLServer
         {
             Models.Medico medico = null;
 
-            using (SqlConnection conn = new SqlConnection(this.connectionString))
+            using (this.conn)
             {
                 conn.Open();
 
-                using (SqlCommand cmd = new SqlCommand())
+                using (this.cmd)
                 {
-                    cmd.Connection = conn;
                     cmd.CommandText = "select crm, nome from medico where id = @id;";
                     cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
 
@@ -77,13 +78,12 @@ namespace web_api.Repositories.SQLServer
         {
             Models.Medico medico = null;
 
-            using (SqlConnection conn = new SqlConnection(this.connectionString))
+            using (this.conn)
             {
                 conn.Open();
 
-                using (SqlCommand cmd = new SqlCommand())
+                using (this.cmd)
                 {
-                    cmd.Connection = conn;
                     cmd.CommandText = "select id, crm, nome from medico where crm = @crm;";
                     cmd.Parameters.Add(new SqlParameter("@crm", SqlDbType.VarChar)).Value = CRM;
 
@@ -106,13 +106,12 @@ namespace web_api.Repositories.SQLServer
         {
             List<Models.Medico> medicos = new List<Models.Medico>();
 
-            using (SqlConnection conn = new SqlConnection(this.connectionString))
+            using (this.conn)
             {
                 conn.Open();
 
-                using (SqlCommand cmd = new SqlCommand())
+                using (this.cmd)
                 {
-                    cmd.Connection = conn;
                     cmd.CommandText = "select id, crm, nome from medico where nome like @nome;";
                     cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = $"%{nome}%";
 
@@ -135,16 +134,15 @@ namespace web_api.Repositories.SQLServer
 
         public bool Insert(Models.Medico medico)
         {
-            using (SqlConnection conn = new SqlConnection(this.connectionString))
+            using (this.conn)
             {
                 conn.Open();
 
-                using (SqlCommand cmd = new SqlCommand())
+                using (this.cmd)
                 {
                     cmd.CommandText = "insert into medico(crm, nome)Svalues(@crm, @nome); select convert(int,scope_identity());";
                     cmd.Parameters.Add(new SqlParameter("@crm", SqlDbType.VarChar)).Value = medico.CRM;
                     cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = medico.Nome;
-                    cmd.Connection = conn;
                     medico.Id = (int) cmd.ExecuteScalar();
                 }
             }
@@ -156,13 +154,12 @@ namespace web_api.Repositories.SQLServer
         {
             int linhasAfetadas = 0;
 
-            using (SqlConnection conn = new SqlConnection(this.connectionString))
+            using (this.conn)
             {
                 conn.Open();
 
-                using (SqlCommand cmd = new SqlCommand())
+                using (this.cmd)
                 {
-                    cmd.Connection = conn;
                     cmd.CommandText = "update medico set crm = @crm, nome = @nome where id = @id;";
                     cmd.Parameters.Add(new SqlParameter("@crm", SqlDbType.VarChar)).Value = medico.CRM;
                     cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = medico.Nome;
@@ -179,13 +176,12 @@ namespace web_api.Repositories.SQLServer
         {
             int linhasAfetadas = 0;
 
-            using (SqlConnection conn = new SqlConnection(this.connectionString))
+            using (this.conn)
             {
                 conn.Open();
 
-                using (SqlCommand cmd = new SqlCommand())
+                using  (this.cmd)
                 {
-                    cmd.Connection = conn;
                     cmd.CommandText = "delete from medico where id = @id;";
                     cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
 
