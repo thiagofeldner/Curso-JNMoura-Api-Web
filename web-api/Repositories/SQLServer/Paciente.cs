@@ -62,7 +62,7 @@ namespace web_api.Repositories.SQLServer
                     _cmd.CommandText = "select codigo, nome, datanascimento from paciente where codigo = @id;";
                     _cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataReader dr = _cmd.ExecuteReader())
                     {
                         if (dr.Read())
                         {
@@ -90,7 +90,7 @@ namespace web_api.Repositories.SQLServer
                     _cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = paciente.Nome;
                     _cmd.Parameters.Add(new SqlParameter("@datanascimento", SqlDbType.Date)).Value = paciente.DataNascimento;
 
-                    paciente.Codigo = (int)_cmd.ExecuteScalar();
+                    paciente.Codigo = (int) _cmd.ExecuteScalar();
                 }
             }
 

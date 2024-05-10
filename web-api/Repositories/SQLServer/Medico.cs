@@ -22,13 +22,13 @@ namespace web_api.Repositories.SQLServer
 
             using (this.conn)
             {
-                conn.Open();
+                this.conn.Open();
 
                 using (this.cmd)
                 {                   
-                    cmd.CommandText = $"select id, crm, nome from medico;";
+                    this.cmd.CommandText = $"select id, crm, nome from medico;";
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataReader dr = this.cmd.ExecuteReader())
                     {
                         while (dr.Read())
                         {
@@ -52,14 +52,14 @@ namespace web_api.Repositories.SQLServer
 
             using (this.conn)
             {
-                conn.Open();
+                this.conn.Open();
 
                 using (this.cmd)
                 {
-                    cmd.CommandText = "select crm, nome from medico where id = @id;";
-                    cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
+                    this.cmd.CommandText = "select crm, nome from medico where id = @id;";
+                    this.cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataReader dr = this.cmd.ExecuteReader())
                     {
                         if (dr.Read())
                         {
@@ -81,14 +81,14 @@ namespace web_api.Repositories.SQLServer
 
             using (this.conn)
             {
-                conn.Open();
+                this.conn.Open();
 
                 using (this.cmd)
                 {
-                    cmd.CommandText = "select id, crm, nome from medico where crm = @crm;";
-                    cmd.Parameters.Add(new SqlParameter("@crm", SqlDbType.VarChar)).Value = CRM;
+                    this.cmd.CommandText = "select id, crm, nome from medico where crm = @crm;";
+                    this.cmd.Parameters.Add(new SqlParameter("@crm", SqlDbType.VarChar)).Value = CRM;
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataReader dr = this.cmd.ExecuteReader())
                     {
                         if (dr.Read())
                         {
@@ -109,14 +109,14 @@ namespace web_api.Repositories.SQLServer
 
             using (this.conn)
             {
-                conn.Open();
+                this.conn.Open();
 
                 using (this.cmd)
                 {
-                    cmd.CommandText = "select id, crm, nome from medico where nome like @nome;";
-                    cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = $"%{nome}%";
+                    this.cmd.CommandText = "select id, crm, nome from medico where nome like @nome;";
+                    this.cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = $"%{nome}%";
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataReader dr = this.cmd.ExecuteReader())
                     {
                         if (dr.Read())
                         {
@@ -141,10 +141,10 @@ namespace web_api.Repositories.SQLServer
 
                 using (this.cmd)
                 {
-                    cmd.CommandText = "insert into medico(crm, nome)Svalues(@crm, @nome); select convert(int,scope_identity());";
-                    cmd.Parameters.Add(new SqlParameter("@crm", SqlDbType.VarChar)).Value = medico.CRM;
-                    cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = medico.Nome;
-                    medico.Id = (int) cmd.ExecuteScalar();
+                    this.cmd.CommandText = "insert into medico(crm, nome) values(@crm, @nome); select convert(int,scope_identity());";
+                    this.cmd.Parameters.Add(new SqlParameter("@crm", SqlDbType.VarChar)).Value = medico.CRM;
+                    this.cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = medico.Nome;
+                    medico.Id = (int) this.cmd.ExecuteScalar();
                 }
             }
 
@@ -157,16 +157,16 @@ namespace web_api.Repositories.SQLServer
 
             using (this.conn)
             {
-                conn.Open();
+                this.conn.Open();
 
                 using (this.cmd)
                 {
-                    cmd.CommandText = "update medico set crm = @crm, nome = @nome where id = @id;";
-                    cmd.Parameters.Add(new SqlParameter("@crm", SqlDbType.VarChar)).Value = medico.CRM;
-                    cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = medico.Nome;
-                    cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = medico.Id;
+                    this.cmd.CommandText = "update medico set crm = @crm, nome = @nome where id = @id;";
+                    this.cmd.Parameters.Add(new SqlParameter("@crm", SqlDbType.VarChar)).Value = medico.CRM;
+                    this.cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = medico.Nome;
+                    this.cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = medico.Id;
                     
-                    linhasAfetadas = cmd.ExecuteNonQuery();
+                    linhasAfetadas = this.cmd.ExecuteNonQuery();
                 }
             }
 
@@ -179,14 +179,14 @@ namespace web_api.Repositories.SQLServer
 
             using (this.conn)
             {
-                conn.Open();
+                this.conn.Open();
 
                 using  (this.cmd)
                 {
-                    cmd.CommandText = "delete from medico where id = @id;";
-                    cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
+                    this.cmd.CommandText = "delete from medico where id = @id;";
+                    this.cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
 
-                    linhasAfetadas = cmd.ExecuteNonQuery();
+                    linhasAfetadas = this.cmd.ExecuteNonQuery();
                 }
             }
 
