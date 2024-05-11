@@ -60,6 +60,9 @@ namespace web_api.Controllers
             if (id != medicamento.Id)
                 return BadRequest("O Id da requisição não coincide com o Id do medicamento");
 
+            if (medicamento.Nome == null || medicamento.DataFabricacao == DateTime.MinValue)
+                return BadRequest("Dados obrigatórios nome e/ou data de fabricação não foram enviados.");
+
             if (!this.repositorioMedicamento.Update(medicamento))
                 return NotFound();
 
