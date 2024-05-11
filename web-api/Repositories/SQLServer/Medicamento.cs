@@ -13,8 +13,10 @@ namespace web_api.Repositories.SQLServer
         public Medicamento(string connectionString)
         {
             this.conn = new SqlConnection(connectionString);
-            this.cmd = new SqlCommand();
-            this.cmd.Connection = conn;
+            this.cmd = new SqlCommand
+            {
+                Connection = conn
+            };
         }
 
         public List<Models.Medicamento> Select()
