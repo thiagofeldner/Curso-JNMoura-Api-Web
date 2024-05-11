@@ -63,6 +63,9 @@ namespace web_api.Controllers
             if (medicamento.Nome == null || medicamento.DataFabricacao == DateTime.MinValue)
                 return BadRequest("Dados obrigatórios nome e/ou data de fabricação não foram enviados.");
 
+            if (medicamento.DataVencimento != null && medicamento.DataVencimento < medicamento.DataFabricacao)
+                return BadRequest("Data vencimento não pode ser menor que a data de fabricação.");
+
             if (!this.repositorioMedicamento.Update(medicamento))
                 return NotFound();
 
