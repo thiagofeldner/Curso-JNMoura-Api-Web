@@ -37,7 +37,10 @@ namespace web_api.Repositories.SQLServer
                             medicamento.Id = (int)dr["id"];
                             medicamento.Nome = dr["nome"].ToString();
                             medicamento.DataFabricacao = Convert.ToDateTime(dr["datafabricacao"]);
-                            if (dr["dataVencimento"] != DBNull.Value)
+
+                            if (dr["dataVencimento"] is DBNull)
+                                medicamento.DataVencimento = null;
+                            else
                                 medicamento.DataVencimento = (DateTime)dr["dataVencimento"];
 
                             medicamentos.Add(medicamento);                            
@@ -70,7 +73,10 @@ namespace web_api.Repositories.SQLServer
                             medicamento.Id = (int)dr["id"];
                             medicamento.Nome = dr["nome"].ToString();
                             medicamento.DataFabricacao = Convert.ToDateTime(dr["datafabricacao"]);
-                            if (dr["dataVencimento"] != DBNull.Value)
+
+                            if (dr["dataVencimento"] is DBNull)
+                                medicamento.DataVencimento = null;
+                            else
                                 medicamento.DataVencimento = (DateTime)dr["dataVencimento"];
 
                         }
@@ -80,9 +86,9 @@ namespace web_api.Repositories.SQLServer
             return medicamento;
         }
 
-        public Models.Medicamento Select(string nome)
+        public List<Models.Medicamento> Select(string nome)
         {
-            Models.Medicamento medicamento = null;
+            List<Models.Medicamento> medicamentos = new List<Models.Medicamento>();
 
             using (this.conn)
             {
@@ -95,19 +101,22 @@ namespace web_api.Repositories.SQLServer
 
                     using (SqlDataReader dr = this.cmd.ExecuteReader())
                     {
-                        if (dr.Read())
+                        while (dr.Read())
                         {
-                            medicamento = new Models.Medicamento();
+                            Models.Medicamento medicamento = new Models.Medicamento();
                             medicamento.Id = (int)dr["id"];
                             medicamento.Nome = dr["nome"].ToString();
                             medicamento.DataFabricacao = Convert.ToDateTime(dr["datafabricacao"]);
-                            if (dr["dataVencimento"] != DBNull.Value)
+
+                            if (dr["dataVencimento"] is DBNull)
+                                medicamento.DataVencimento = null;
+                            else
                                 medicamento.DataVencimento = (DateTime)dr["dataVencimento"];
                         }
                     }
                 }
             }
-            return medicamento;
+            return medicamentos;
         }
 
         public bool Insert(Models.Medicamento medicamento)
@@ -122,9 +131,9 @@ namespace web_api.Repositories.SQLServer
                     this.cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = medicamento.Nome;
                     this.cmd.Parameters.Add(new SqlParameter("@datafabricacao", SqlDbType.Date)).Value = medicamento.DataFabricacao;
                     if (medicamento.DataVencimento != null)
-                        cmd.Parameters.Add(new SqlParameter("@dataVencimento", System.Data.SqlDbType.Date)).Value = medicamento.DataVencimento;
+                        cmd.Parameters.Add(new SqlParameter("@dataVencimento", SqlDbType.Date)).Value = medicamento.DataVencimento;
                     else
-                        cmd.Parameters.Add(new SqlParameter("@dataVencimento", System.Data.SqlDbType.Date)).Value = DBNull.Value;
+                        cmd.Parameters.Add(new SqlParameter("@dataVencimento", SqlDbType.Date)).Value = DBNull.Value;
 
                     medicamento.Id = (int)cmd.ExecuteScalar();
                 }            
