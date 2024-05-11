@@ -118,7 +118,7 @@ namespace web_api.Repositories.SQLServer
 
                 using (this.cmd)
                 {
-                    this.cmd.CommandText = "insert into medicamento(Nome, DataFabricacao, DataVencimento) values(@nome, @datafabricacao, @datavencimento); select convert(int,scope_identity());"; ;
+                    this.cmd.CommandText = "insert into medicamento(Nome, DataFabricacao, DataVencimento) values(@nome, @datafabricacao, @datavencimento); select convert(int,scope_identity());";
                     this.cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = medicamento.Nome;
                     this.cmd.Parameters.Add(new SqlParameter("@datafabricacao", SqlDbType.Date)).Value = medicamento.DataFabricacao;
                     if (medicamento.DataVencimento != null)
@@ -151,7 +151,6 @@ namespace web_api.Repositories.SQLServer
                     linhasAfetadas = this.cmd.ExecuteNonQuery();
                 }
             }
-
             return linhasAfetadas == 1;
         }
 

@@ -8,6 +8,5 @@ namespace web_api.Models
         public string Nome { get; set; }
         public DateTime DataFabricacao { get; set; }
         public DateTime? DataVencimento { get; set; }
-
     }
 }
