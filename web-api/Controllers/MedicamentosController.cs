@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Web.Http;
 
 namespace web_api.Controllers
 {
@@ -43,6 +44,9 @@ namespace web_api.Controllers
         [HttpPost]
         public IHttpActionResult Post(Models.Medicamento medicamento)
         {
+            if (medicamento.Nome == null || medicamento.DataFabricacao == DateTime.MinValue)
+                return BadRequest("Dados obrigatórios nome e/ou data de fabricação não foram enviados.");
+
             if (!this.repositorioMedicamento.Insert(medicamento))
                 return InternalServerError();
 
@@ -54,7 +58,7 @@ namespace web_api.Controllers
         public IHttpActionResult Put(int id, Models.Medicamento medicamento)
         {
             if (id != medicamento.Id)
-                return BadRequest("O id da requisição não coincide com o id do medicamento");
+                return BadRequest("O Id da requisição não coincide com o Id do medicamento");
 
             if (!this.repositorioMedicamento.Update(medicamento))
                 return NotFound();
