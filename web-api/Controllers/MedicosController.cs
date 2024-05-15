@@ -14,9 +14,17 @@ namespace web_api.Controllers
 
         // GET: api/Medicos
         [HttpGet]
-        public async Task<IHttpActionResult> Get()
+        public IHttpActionResult Get()
         {
-            return Ok(await this.repositorioMedico.Select());
+            try
+            {
+                return Ok(this.repositorioMedico.Select());
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+
         }
 
         // GET: api/Medicos/id

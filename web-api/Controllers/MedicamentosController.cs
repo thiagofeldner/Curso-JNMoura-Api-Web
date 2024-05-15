@@ -15,16 +15,16 @@ namespace web_api.Controllers
 
         // GET: api/Medicamentos
         [HttpGet]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
-            return Ok(this.repositorioMedicamento.Select());
+            return Ok(await this.repositorioMedicamento.Select());
         }
 
         // GET: api/Medicamentos/5
         [HttpGet]
-        public IHttpActionResult Get(int id)
+        public async Task<IHttpActionResult> Get(int id)
         {
-            Models.Medicamento medicamento = this.repositorioMedicamento.Select(id);
+            Models.Medicamento medicamento = await this.repositorioMedicamento.Select(id);
 
             if (medicamento is null)
                 return NotFound();
@@ -33,12 +33,12 @@ namespace web_api.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult Get(string nome) {
+        public async Task<IHttpActionResult> Get(string nome) {
 
             if (nome.Length < 3)
                 return BadRequest("O nome deve ter no mínimo 3 caracteres.");
 
-            return Ok(this.repositorioMedicamento.Select(nome));
+            return Ok(await this.repositorioMedicamento.Select(nome));
         }
 
         // POST: api/Medicamentos
@@ -59,7 +59,7 @@ namespace web_api.Controllers
 
         // PUT: api/Medicamentos/5
         [HttpPut]
-        public IHttpActionResult Put(int id, Models.Medicamento medicamento)
+        public async Task<IHttpActionResult> Put(int id, Models.Medicamento medicamento)
         {
             if (id != medicamento.Id)
                 return BadRequest("O Id da requisição não coincide com o Id do medicamento");
@@ -70,7 +70,7 @@ namespace web_api.Controllers
             if (medicamento.DataVencimento < medicamento.DataFabricacao)
                 return BadRequest("Data vencimento não pode ser menor que a data de fabricação.");
 
-            if (!this.repositorioMedicamento.Update(medicamento))
+            if (!await this.repositorioMedicamento.Update(medicamento))
                 return NotFound();
 
             return Ok(medicamento);
@@ -78,9 +78,9 @@ namespace web_api.Controllers
 
         // DELETE: api/Medicamentos/5
         [HttpDelete]
-        public IHttpActionResult Delete(int id)
+        public async Task<IHttpActionResult> Delete(int id)
         {
-            if (!this.repositorioMedicamento.Delete(id))
+            if (!await this.repositorioMedicamento.Delete(id))
                 return NotFound();
 
             return Ok();

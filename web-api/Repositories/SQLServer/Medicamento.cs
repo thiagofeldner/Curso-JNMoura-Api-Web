@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Runtime.Caching;
 using System.Threading.Tasks;
 
 namespace web_api.Repositories.SQLServer
@@ -11,6 +12,10 @@ namespace web_api.Repositories.SQLServer
         private readonly SqlConnection conn;
         private readonly SqlCommand cmd;
 
+        private readonly MemoryCache _cache;
+        private readonly CacheItemPolicy _policy;
+        private readonly string cacheKey = "medicamentoKey";
+
         public Medicamento(string connectionString)
         {
             this.conn = new SqlConnection(connectionString);
@@ -18,56 +23,70 @@ namespace web_api.Repositories.SQLServer
             {
                 Connection = conn
             };
-        }
 
-        public List<Models.Medicamento> Select()
-        {
-            List<Models.Medicamento> medicamentos = new List<Models.Medicamento>();
-
-            using(this.conn)
+            _cache = MemoryCache.Default;
+            _policy = new CacheItemPolicy
             {
-                this.conn.Open();
+                AbsoluteExpiration = DateTimeOffset.Now.AddSeconds(30)
+            };
+        }        
 
-                using (this.cmd)
+        public async Task<List<Models.Medicamento>> Select()
+        {
+            var cacheItem = _cache.Get(cacheKey);
+
+            if (cacheItem is null)
+            {
+                List<Models.Medicamento> medicamentos = new List<Models.Medicamento>();
+
+                using (this.conn)
                 {
-                    this.cmd.CommandText = "select id, nome, dataFabricacao, dataVencimento from medicamento;";
+                    await this.conn.OpenAsync();
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (this.cmd)
                     {
-                        while (dr.Read())
-                        {
-                            Models.Medicamento medicamento = new Models.Medicamento();
-                            medicamento.Id = (int)dr["id"];
-                            medicamento.Nome = dr["nome"].ToString();
-                            medicamento.DataFabricacao = Convert.ToDateTime(dr["datafabricacao"]);
+                        this.cmd.CommandText = "select id, nome, dataFabricacao, dataVencimento from medicamento;";
 
-                            if (!(dr["dataVencimento"] is DBNull))
-                                medicamento.DataVencimento = Convert.ToDateTime(dr["dataVencimento"]);
-                                
-                            medicamentos.Add(medicamento);
+                        using (SqlDataReader dr = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await dr.ReadAsync())
+                            {
+                                Models.Medicamento medicamento = new Models.Medicamento();
+                                medicamento.Id = (int)dr["id"];
+                                medicamento.Nome = dr["nome"].ToString();
+                                medicamento.DataFabricacao = Convert.ToDateTime(dr["datafabricacao"]);
+
+                                if (!(dr["dataVencimento"] is DBNull))
+                                    medicamento.DataVencimento = Convert.ToDateTime(dr["dataVencimento"]);
+
+                                medicamentos.Add(medicamento);
+                            }
                         }
                     }
                 }
+
+                _cache.Add(cacheKey, medicamentos, _policy);
+                return medicamentos;
             }
-            return medicamentos;
+            return (List<Models.Medicamento>) cacheItem;
         }
 
-        public Models.Medicamento Select(int id)
+        public async Task<Models.Medicamento> Select(int id)
         {
             Models.Medicamento medicamento = null;
 
             using (this.conn)
             {
-                this.conn.Open();
+                await this.conn.OpenAsync();
 
                 using (this.cmd)
                 {
                     this.cmd.CommandText = "select id, nome, dataFabricacao, dataVencimento from medicamento where id = @id;";
                     this.cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
 
-                    using (SqlDataReader dr = this.cmd.ExecuteReader())
+                    using (SqlDataReader dr = await this.cmd.ExecuteReaderAsync())
                     {
-                        if (dr.Read())
+                        if (await dr.ReadAsync())
                         {
                             medicamento = new Models.Medicamento();
 
@@ -85,22 +104,22 @@ namespace web_api.Repositories.SQLServer
             return medicamento;
         }
 
-        public List<Models.Medicamento> Select(string nome)
+        public async Task<List<Models.Medicamento>> Select(string nome)
         {
             List<Models.Medicamento> medicamentos = new List<Models.Medicamento>();
 
             using (this.conn)
             {
-                this.conn.Open();
+                await this.conn.OpenAsync();
 
                 using (this.cmd)
                 {
                     this.cmd.CommandText = "select id, nome, dataFabricacao, dataVencimento from medicamento where nome like @nome;";
                     this.cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = $"%{nome}%";
 
-                    using (SqlDataReader dr = this.cmd.ExecuteReader())
+                    using (SqlDataReader dr = await this.cmd.ExecuteReaderAsync())
                     {
-                        while (dr.Read())
+                        while (await dr.ReadAsync())
                         {
                             Models.Medicamento medicamento = new Models.Medicamento();
                             medicamento.Id = (int)dr["id"];
@@ -136,18 +155,20 @@ namespace web_api.Repositories.SQLServer
                         cmd.Parameters.Add(new SqlParameter("@dataVencimento", SqlDbType.Date)).Value = DBNull.Value;
 
                     medicamento.Id = (int)await cmd.ExecuteScalarAsync();
+
+                    this._cache.Remove(cacheKey);
                 }            
             }
             return medicamento.Id != 0;
         }
 
-        public bool Update(Models.Medicamento medicamento)
+        public async Task<bool> Update(Models.Medicamento medicamento)
         {
             int linhasAfetadas = 0;
 
             using (this.conn)
             {
-                this.conn.Open();
+                await this.conn.OpenAsync();
 
                 using (this.cmd)
                 {
@@ -157,26 +178,28 @@ namespace web_api.Repositories.SQLServer
                     this.cmd.Parameters.Add(new SqlParameter("@datafabricacao", SqlDbType.Date)).Value = medicamento.DataFabricacao;
                     this.cmd.Parameters.Add(new SqlParameter("@datavencimento", SqlDbType.Date)).Value = medicamento.DataVencimento;
 
-                    linhasAfetadas = this.cmd.ExecuteNonQuery();
+                    linhasAfetadas = await this.cmd.ExecuteNonQueryAsync();
+                    this._cache.Remove(cacheKey);
                 }
             }
             return linhasAfetadas == 1;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             int linhasAfetadas = 0;
 
             using (this.conn)
             {
-                this.conn.Open();
+                await this.conn.OpenAsync();
 
                 using (this.cmd)
                 {
                     this.cmd.CommandText = "delete from medicamento where id = @id;";
                     this.cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
 
-                    linhasAfetadas = this.cmd.ExecuteNonQuery();
+                    linhasAfetadas = await this.cmd.ExecuteNonQueryAsync();
+                    this._cache.Remove(cacheKey);
                 }
             }
             return linhasAfetadas == 1;

@@ -11,6 +11,7 @@ namespace web_api.Models
         [StringLength(100)]
         public string Nome { get; set; }
 
+        [Required]        
         public DateTime DataFabricacao { get; set; }
         public DateTime? DataVencimento { get; set; }
     }

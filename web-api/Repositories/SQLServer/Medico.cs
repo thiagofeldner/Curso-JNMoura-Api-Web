@@ -19,21 +19,21 @@ namespace web_api.Repositories.SQLServer
             };
         }
 
-        public async Task<List<Models.Medico>> Select()
+        public List<Models.Medico> Select()
         {
             List<Models.Medico> medicos = new List<Models.Medico>();
 
             using (this.conn)
             {
-                await this.conn.OpenAsync();
+                this.conn.Open();
 
                 using (this.cmd)
                 {                   
                     this.cmd.CommandText = $"select id, crm, nome from medico;";
 
-                    using (SqlDataReader dr = await this.cmd.ExecuteReaderAsync())
+                    using (SqlDataReader dr = this.cmd.ExecuteReader())
                     {
-                        while (await dr.ReadAsync())
+                        while (dr.Read())
                         {
                             Models.Medico medico = new Models.Medico();
 
