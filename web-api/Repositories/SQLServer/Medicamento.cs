@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace web_api.Repositories.SQLServer
 {
@@ -117,11 +118,11 @@ namespace web_api.Repositories.SQLServer
             return medicamentos;
         }
 
-        public bool Insert(Models.Medicamento medicamento)
+        public async Task<bool> Insert(Models.Medicamento medicamento)
         {
             using (this.conn) 
             {
-                this.conn.Open();
+                await this.conn.OpenAsync();
 
                 using (this.cmd)
                 {
@@ -134,7 +135,7 @@ namespace web_api.Repositories.SQLServer
                     else
                         cmd.Parameters.Add(new SqlParameter("@dataVencimento", SqlDbType.Date)).Value = DBNull.Value;
 
-                    medicamento.Id = (int)cmd.ExecuteScalar();
+                    medicamento.Id = (int)await cmd.ExecuteScalarAsync();
                 }            
             }
             return medicamento.Id != 0;

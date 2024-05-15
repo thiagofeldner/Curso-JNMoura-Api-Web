@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace web_api.Repositories.SQLServer
 {
@@ -18,21 +19,21 @@ namespace web_api.Repositories.SQLServer
             };
         }
 
-        public List<Models.Medico> Select()
+        public async Task<List<Models.Medico>> Select()
         {
             List<Models.Medico> medicos = new List<Models.Medico>();
 
             using (this.conn)
             {
-                this.conn.Open();
+                await this.conn.OpenAsync();
 
                 using (this.cmd)
                 {                   
                     this.cmd.CommandText = $"select id, crm, nome from medico;";
 
-                    using (SqlDataReader dr = this.cmd.ExecuteReader())
+                    using (SqlDataReader dr = await this.cmd.ExecuteReaderAsync())
                     {
-                        while (dr.Read())
+                        while (await dr.ReadAsync())
                         {
                             Models.Medico medico = new Models.Medico();
 
@@ -48,22 +49,22 @@ namespace web_api.Repositories.SQLServer
             return medicos;
         }
 
-        public Models.Medico Select(int id)
+        public async Task<Models.Medico> Select(int id)
         {
             Models.Medico medico = null;
 
             using (this.conn)
             {
-                this.conn.Open();
+                await this.conn.OpenAsync();
 
                 using (this.cmd)
                 {
                     this.cmd.CommandText = "select crm, nome from medico where id = @id;";
                     this.cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
 
-                    using (SqlDataReader dr = this.cmd.ExecuteReader())
+                    using (SqlDataReader dr = await this.cmd.ExecuteReaderAsync())
                     {
-                        if (dr.Read())
+                        if (await dr.ReadAsync())
                         {
                             medico = new Models.Medico();
                             medico.Id = id;
@@ -77,22 +78,22 @@ namespace web_api.Repositories.SQLServer
             return medico;
         }
 
-        public Models.Medico Select(string CRM)
+        public async Task<Models.Medico> Select(string CRM)
         {
             Models.Medico medico = null;
 
             using (this.conn)
             {
-                this.conn.Open();
+                await this.conn.OpenAsync();
 
                 using (this.cmd)
                 {
                     this.cmd.CommandText = "select id, crm, nome from medico where crm = @crm;";
                     this.cmd.Parameters.Add(new SqlParameter("@crm", SqlDbType.VarChar)).Value = CRM;
 
-                    using (SqlDataReader dr = this.cmd.ExecuteReader())
+                    using (SqlDataReader dr = await this.cmd.ExecuteReaderAsync())
                     {
-                        if (dr.Read())
+                        if (await dr.ReadAsync())
                         {
                             medico = new Models.Medico();
                             medico.Id = (int)dr["id"];
@@ -105,22 +106,22 @@ namespace web_api.Repositories.SQLServer
             return medico;
         }
 
-        public List<Models.Medico> SelectByNome(string nome)
+        public async Task<List<Models.Medico>> SelectByNome(string nome)
         {
             List<Models.Medico> medicos = new List<Models.Medico>();
 
             using (this.conn)
             {
-                this.conn.Open();
+                await this.conn.OpenAsync();
 
                 using (this.cmd)
                 {
                     this.cmd.CommandText = "select id, crm, nome from medico where nome like @nome;";
                     this.cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = $"%{nome}%";
 
-                    using (SqlDataReader dr = this.cmd.ExecuteReader())
+                    using (SqlDataReader dr = await this.cmd.ExecuteReaderAsync())
                     {
-                        if (dr.Read())
+                        if (await dr.ReadAsync())
                         {
                             Models.Medico medico = new Models.Medico();
                             medico.Id = (int)dr["id"];
@@ -135,31 +136,31 @@ namespace web_api.Repositories.SQLServer
             return medicos;
         }
 
-        public bool Insert(Models.Medico medico)
+        public async Task<bool> Insert(Models.Medico medico)
         {
             using (this.conn)
             {
-                conn.Open();
+                await conn.OpenAsync();
 
                 using (this.cmd)
                 {
                     this.cmd.CommandText = "insert into medico(crm, nome) values(@crm, @nome); select convert(int,scope_identity());";
                     this.cmd.Parameters.Add(new SqlParameter("@crm", SqlDbType.VarChar)).Value = medico.CRM;
                     this.cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = medico.Nome;
-                    medico.Id = (int) this.cmd.ExecuteScalar();
+                    medico.Id = (int)await this.cmd.ExecuteScalarAsync();
                 }
             }
 
             return medico.Id != 0;
         }
 
-        public bool Update(Models.Medico medico)
+        public async Task<bool> Update(Models.Medico medico)
         {
             int linhasAfetadas = 0;
 
             using (this.conn)
             {
-                this.conn.Open();
+                await this.conn.OpenAsync();
 
                 using (this.cmd)
                 {
@@ -168,27 +169,27 @@ namespace web_api.Repositories.SQLServer
                     this.cmd.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar)).Value = medico.Nome;
                     this.cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = medico.Id;
                     
-                    linhasAfetadas = this.cmd.ExecuteNonQuery();
+                    linhasAfetadas = await this.cmd.ExecuteNonQueryAsync();
                 }
             }
 
             return linhasAfetadas == 1;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> Delete(int id)
         {
             int linhasAfetadas = 0;
 
-            using (this.conn)
+            using(this.conn)
             {
-                this.conn.Open();
+                await this.conn.OpenAsync();
 
-                using  (this.cmd)
+                using(this.cmd)
                 {
                     this.cmd.CommandText = "delete from medico where id = @id;";
                     this.cmd.Parameters.Add(new SqlParameter("@id", SqlDbType.Int)).Value = id;
 
-                    linhasAfetadas = this.cmd.ExecuteNonQuery();
+                    linhasAfetadas = await this.cmd.ExecuteNonQueryAsync();
                 }
             }
 

@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace web_api.Controllers
 {
@@ -13,16 +14,19 @@ namespace web_api.Controllers
 
         // GET: api/Medicos
         [HttpGet]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
-            return Ok(this.repositorioMedico.Select());
+            return Ok(await this.repositorioMedico.Select());
         }
 
         // GET: api/Medicos/id
         [HttpGet]
-        public IHttpActionResult Get(int id)
+        public async Task<IHttpActionResult> Get(int id)
         {
-            Models.Medico medico = this.repositorioMedico.Select(id);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            Models.Medico medico = await this.repositorioMedico.Select(id);
 
             if (medico is null)
                 return NotFound();
@@ -32,9 +36,9 @@ namespace web_api.Controllers
 
         // GET: api/Medicos?crm=123456/BH
         [HttpGet]
-        public IHttpActionResult Get(string CRM)
+        public async Task<IHttpActionResult> Get(string CRM)
         {
-            Models.Medico medico = this.repositorioMedico.Select(CRM);
+            Models.Medico medico = await this.repositorioMedico.Select(CRM);
 
             if (medico is null)
                 return NotFound();
@@ -44,19 +48,19 @@ namespace web_api.Controllers
 
         // GET: api/Medicos?nome=zeca
         [HttpGet]
-        public IHttpActionResult GetByNome(string nome)
+        public async Task<IHttpActionResult> GetByNome(string nome)
         {
             if (nome.Length < 3)
                 return BadRequest("O nome deve ter no mínimo 5 caracteres.");
 
-            return Ok(this.repositorioMedico.SelectByNome(nome));
+            return Ok(await this.repositorioMedico.SelectByNome(nome));
         }
 
         // POST: api/Medicos        
         [HttpPost]
-        public IHttpActionResult Post(Models.Medico medico)
+        public async Task<IHttpActionResult> Post(Models.Medico medico)
         {
-            if (!this.repositorioMedico.Insert(medico))
+            if (! await this.repositorioMedico.Insert(medico))
                 return InternalServerError();
 
             return Ok(medico);
@@ -64,12 +68,12 @@ namespace web_api.Controllers
 
         // PUT: api/Medicos/5
         [HttpPut]
-        public IHttpActionResult Put(int id, Models.Medico medico)
+        public async Task<IHttpActionResult> Put(int id, Models.Medico medico)
         {
             if (id != medico.Id)
                 return BadRequest("O id da requisição não coincide com o id do médico");
 
-            if (!this.repositorioMedico.Update(medico))
+            if (! await this.repositorioMedico.Update(medico))
                 return NotFound();
 
             return Ok(medico);
@@ -77,9 +81,9 @@ namespace web_api.Controllers
 
         // DELETE: api/Medicos/5
         [HttpDelete]
-        public IHttpActionResult Delete(int id)
-        {
-            if (!this.repositorioMedico.Delete(id))
+        public async Task<IHttpActionResult> Delete(int id)
+        { 
+            if (!await this.repositorioMedico.Delete(id))
                 return NotFound();
 
             return Ok();

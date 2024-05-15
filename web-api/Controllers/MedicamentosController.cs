@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace web_api.Controllers
@@ -42,7 +43,7 @@ namespace web_api.Controllers
 
         // POST: api/Medicamentos
         [HttpPost]
-        public IHttpActionResult Post(Models.Medicamento medicamento)
+        public async Task<IHttpActionResult> Post(Models.Medicamento medicamento)
         {
             if (medicamento.Nome == null || medicamento.DataFabricacao == DateTime.MinValue)
                 return BadRequest("Dados obrigatórios nome e/ou data de fabricação não foram enviados.");
@@ -50,7 +51,7 @@ namespace web_api.Controllers
             if (medicamento.DataVencimento < medicamento.DataFabricacao)
                 return BadRequest("Data vencimento não pode ser menor que a data de fabricação.");
 
-            if (!this.repositorioMedicamento.Insert(medicamento))
+            if (! await this.repositorioMedicamento.Insert(medicamento))
                 return InternalServerError();
 
             return Ok(medicamento);
